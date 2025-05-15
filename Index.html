@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kanban Board</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #f1f3f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  
+    h2 {
+      font-weight: 600;
+      color: #343a40;
+    }
+  
+    .kanban-column {
+      min-height: 300px;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      padding: 15px;
+      background-color: #ffffff;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+  
+    .kanban-column.drag-over {
+      background-color: #e9f5ff;
+      border-color: #339af0;
+    }
+  
+    .task-card {
+      position: relative;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      cursor: grab;
+      transition: box-shadow 0.2s ease;
+    }
+  
+    .task-card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+  
+    .btn-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 0.25rem;
+      background: none;
+      border: none;
+    }
+  
+    .input-group input {
+      border-radius: 8px 0 0 8px;
+    }
+  
+    .input-group .btn {
+      border-radius: 0 8px 8px 0;
+    }
+  </style>
+  
+</head>
+<body class="p-4">
+
+  <div class="container">
+    <h2 class="mb-4">Kanban Board</h2>
+
+    <div class="input-group mb-4">
+      <input type="text" id="taskInput" class="form-control" placeholder="Enter a new task">
+      <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-md-4">
+        <h5>To Do</h5>
+        <div id="todo" class="kanban-column" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+      </div>
+      <div class="col-md-4">
+        <h5>In Progress</h5>
+        <div id="progress" class="kanban-column" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+      </div>
+      <div class="col-md-4">
+        <h5>Completed</h5>
+        <div id="completed" class="kanban-column" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let taskIdCounter = 0;
+
+    function addTask() {
+  const taskInput = document.getElementById("taskInput");
+  const taskText = taskInput.value.trim();
+
+  if (taskText === "") return;
+
+  const task = document.createElement("div");
+  task.className = "task-card";
+  task.draggable = true;
+  task.id = `task-${taskIdCounter++}`;
+  task.ondragstart = drag;
+
+  task.innerHTML = `
+    ${taskText}
+    <button class="btn-close" onclick="this.parentElement.remove()" aria-label="Close"></button>
+  `;
+
+  document.getElementById("todo").appendChild(task);
+  taskInput.value = "";
+}
+
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.id);
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const taskId = event.dataTransfer.getData("text");
+      const task = document.getElementById(taskId);
+      if (task && event.currentTarget !== task.parentNode) {
+        event.currentTarget.appendChild(task);
+      }
+    }
+
+ 
+</script>
+  
+
+</body>
+</html>
